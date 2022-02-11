@@ -44,3 +44,8 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.info(`Server running at http://localhost:${port}/`);
 });
+
+app.get('/', (req,res) => {
+  console.info('request to /')
+  res.send('Hello World')
+})
