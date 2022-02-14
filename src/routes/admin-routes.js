@@ -1,22 +1,17 @@
-app.post(
-  '/login',
-  passport.authenticate('local', {
-    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
-    failureRedirect: '/login',
-  }),
-  (req, res) => {
-    res.redirect('/admin');
-  },
-);
+import express from 'express';
+import { listEvents } from '../lib/db.js';
 
-app.get('logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
-});
+export const router = express.Router();
 
-app.get('/admin', ensureLoggedIn, (req,res) => {
-  res.send(`
-  <p>Hér eru leyndarmál</p>
-  <p><a href="/">Forsíða</a></p>
-  `);
+export function ensureLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.redirect('/login');
+}
+
+
+router.get('/', async (req,res) => {
+  const events = await listEvents();
+  res.render('admin', { title: 'admin svæði', events})
 });

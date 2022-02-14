@@ -36,4 +36,4 @@ CREATE TABLE IF NOT EXISTS users (
   password character varying(256) not null
 );
 
-INSERT INTO users (username, password) VALUES ('admin', '1234');
+INSERT INTO users (username, password) VALUES ('admin', '$2b$11$HRLp260MPwDT8/f8LFTdAuabMsDKY8ItHtHVVv2M65dC24//QOTni');

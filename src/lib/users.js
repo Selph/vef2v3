@@ -3,6 +3,8 @@ import { query } from './db.js';
 
 export async function comparePasswords(password, hash) {
   const result = await bcrypt.compare(password, hash);
+  console.log('pass, hash :>> ', password,hash)
+  console.log('bcrypt result :>> ', result)
 
   return result;
 }

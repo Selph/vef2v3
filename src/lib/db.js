@@ -65,6 +65,7 @@ export async function select(q) {
     client.release();
   }
 }
+
 export async function createRegistration({ name, comment, event }) {
   const q = `
     INSERT INTO
@@ -74,8 +75,19 @@ export async function createRegistration({ name, comment, event }) {
     RETURNING *`;
   const values = [name, comment, event];
 
-  const result = await query(q, values, pool);
+  const result = await query(q, values);
   return result !== null;
+}
+
+export async function listEvents(){
+  const q = `
+    SELECT * FROM events`
+
+  const result = await query(q);
+
+  if (result) return result.rows;
+
+  return [];
 }
 
 export async function getEvents() {

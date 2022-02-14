@@ -13,13 +13,19 @@ import { getEvents} from './lib/db.js';
 import {
   comparePasswords,
   findByUsername,
-  findById
+  findById,
+  createUser
 } from './lib/users.js';
 import { validation, results, postComment} from './lib/validation.js'
+import {  router as adminRouter } from './routes/admin-routes.js';
+import { sanitation } from './lib/sanitation.js';
 
 dotenv.config();
 
 const app = express();
+
+// Sér um að req.body innihaldi gögn úr formi
+app.use(express.urlencoded({ extended: true }));
 
 const {
   PORT: port = 3000,
@@ -38,6 +44,40 @@ app.use(session({
   saveUninitialized: false
 }));
 
+const path = dirname(fileURLToPath(import.meta.url));
+const slug = undefined;
+
+app.use(express.static(join(path, '../public')));
+
+app.set('views', join(path, '../views'));
+app.set('view engine', 'ejs');
+
+
+async function strat(username, password, done) {
+  try {
+    const user = await findByUsername(username);
+
+    if (!user) {
+      return done(null, false);
+    }
+
+    // Verður annað hvort notandahlutur ef lykilorð rétt, eða false
+    const result = await comparePasswords(password, user.password);
+
+    console.log('Pass Result :>> ', result)
+
+    return done(null, result ? user : false);
+  } catch (err) {
+    console.error(err);
+    return done(err);
+  }
+}
+
+passport.use(new Strategy({
+  usernameField: 'username',
+  passwordField: 'password',
+}, strat));
+
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
@@ -52,47 +92,9 @@ passport.deserializeUser(async (id, done) => {
 });
 
 app.use(passport.initialize());
-app.use(passport.session())
+app.use(passport.session());
 
-function ensureLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  return res.redirect('/login');
-}
-
-// Sér um að req.body innihaldi gögn úr formi
-app.use(express.urlencoded({ extended: true }));
-
-const path = dirname(fileURLToPath(import.meta.url));
-const slug = undefined;
-
-app.use(express.static(join(path, '../public')));
-app.set('views', join(path, '../views'));
-app.set('view engine', 'ejs');
-
-async function strat(username, password, done) {
-  try {
-    const user = await findByUsername(username);
-
-    if (!user) {
-      return done(null,false);
-    }
-
-    // Verður annað hvort notandahlutur ef lykilorð rétt, eða false
-    const result = await comparePasswords(password, user.password);
-
-    return done(null, result ? user : false);
-  } catch (err) {
-    console.error(err);
-    return done(err);
-  }
-}
-
-passport.use(new Strategy({
-  usernameField: 'username',
-  passwordField: 'passsword',
-}, strat))
+app.use('/admin', adminRouter)
 
 app.get('/login', (req, res) => {
   if (req.isAuthenticated()) {
@@ -134,13 +136,6 @@ app.get('logout', (req, res) => {
   res.redirect('/');
 });
 
-app.get('/admin', ensureLoggedIn, (req,res) => {
-  res.send(`
-  <p>Hér eru leyndarmál</p>
-  <p><a href="/">Forsíða</a></p>
-  `);
-});
-
 app.locals = {
   // TODO hjálparföll fyrir template
 };
@@ -166,7 +161,7 @@ app.get('/', async (req,res) => {
   })
 })
 
-app.post('/post', validation, results, postComment)
+app.post('/post', validation, results, sanitation, postComment)
 
 /** Middleware sem sér um 404 villur. */
 app.use((req, res) => {
