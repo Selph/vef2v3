@@ -21,7 +21,7 @@ const {
 // mode, á heroku, ekki á local vél
 const ssl = nodeEnv !== 'development' ? { rejectUnauthorized: false } : false;
 
-const pool = new pg.Pool({ connectionString, ssl:false });
+const pool = new pg.Pool({ connectionString, ssl });
 
 pool.on('error', (err) => {
   console.error('postgres error, exiting...', err);
