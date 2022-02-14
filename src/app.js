@@ -1,34 +1,65 @@
 import dotenv from 'dotenv';
 import pg from 'pg';
 import express from 'express';
+import session from 'express-session';
+import passport from 'passport';
+import { Strategy } from 'passport-local';
 import { body, validationResult } from 'express-validator';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { isInvalid } from './lib/template-helpers.js';
 import { indexRouter } from './routes/index-routes.js';
-import { createRegistration, getEvents} from './lib/query-helpers.js';
+import { getEvents} from './lib/db.js';
+import {
+  comparePasswords,
+  findByUsername,
+  findById
+} from './lib/users.js';
+import { validation, results, postComment} from './lib/validation.js'
 
 dotenv.config();
 
+const app = express();
+
 const {
   PORT: port = 3000,
-  DATABASE_URL: connectionString,
-  NODE_ENV: nodeEnv,
+  DATABASE_URL: databaseUrl,
+  SESSION_SECRET: sessionSecret = 'sdjafkahsdg',
 } = process.env;
 
+if (!sessionSecret || !databaseUrl) {
+  console.error('Vantar .env gildi');
+  process.exit(1);
+}
 
-// Notum SSL tengingu við gagnagrunn ef við erum *ekki* í development
-// mode, á heroku, ekki á local vél
-const ssl = nodeEnv !== 'development' ? { rejectUnauthorized: false } : false;
+app.use(session({
+  secret: sessionSecret,
+  resave: false,
+  saveUninitialized: false
+}));
 
-const pool = new pg.Pool({ connectionString, ssl });
-
-pool.on('error', (err) => {
-  console.error('postgres error, exiting...', err);
-  process.exit(-1);
+passport.serializeUser((user, done) => {
+  done(null, user.id);
 });
 
-const app = express();
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await findById(id);
+    return done(null, user);
+  } catch (error) {
+    return done(error)
+  }
+});
+
+app.use(passport.initialize());
+app.use(passport.session())
+
+function ensureLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.redirect('/login');
+}
 
 // Sér um að req.body innihaldi gögn úr formi
 app.use(express.urlencoded({ extended: true }));
@@ -39,6 +70,76 @@ const slug = undefined;
 app.use(express.static(join(path, '../public')));
 app.set('views', join(path, '../views'));
 app.set('view engine', 'ejs');
+
+async function strat(username, password, done) {
+  try {
+    const user = await findByUsername(username);
+
+    if (!user) {
+      return done(null,false);
+    }
+
+    // Verður annað hvort notandahlutur ef lykilorð rétt, eða false
+    const result = await comparePasswords(password, user.password);
+
+    return done(null, result ? user : false);
+  } catch (err) {
+    console.error(err);
+    return done(err);
+  }
+}
+
+passport.use(new Strategy({
+  usernameField: 'username',
+  passwordField: 'passsword',
+}, strat))
+
+app.get('/login', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.redirect('/');
+  }
+
+  let message = '';
+
+  // Athugum hvort einvher skilaboð séu til í session, ef svo er
+  // birtum þau og hreinsum skilaboð
+  if (req.session.messages && req.session.messages.length > 0) {
+    message = req.session.messages.join(', ');
+    req.session.messages = [];
+  }
+
+  return res.send(`
+    <form method="post" action="/login">
+      <label>Notendanafn: <input type="text" name="username"></label>
+      <label>Lykilorð: <input type="password" name="password"></label>
+      <button>Innskrá</button>
+    </form>
+    <p>${message}</p>
+  `);
+});
+
+app.post(
+  '/login',
+  passport.authenticate('local', {
+    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
+    failureRedirect: '/login',
+  }),
+  (req, res) => {
+    res.redirect('/admin');
+  },
+);
+
+app.get('logout', (req, res) => {
+  req.logout();
+  res.redirect('/');
+});
+
+app.get('/admin', ensureLoggedIn, (req,res) => {
+  res.send(`
+  <p>Hér eru leyndarmál</p>
+  <p><a href="/">Forsíða</a></p>
+  `);
+});
 
 app.locals = {
   // TODO hjálparföll fyrir template
@@ -52,33 +153,10 @@ app.locals.isInvalid = isInvalid;
 
 // app.use('/', indexRouter);
 // TODO admin routes
-//app.use(`/:${slug}`)
-
-const validation = [
-  body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt')
-]
-
-const results =
-  async (req, res, next) => {
-    const eventz = await getEvents(pool)
-
-    const { name = '', comment = '', events = eventz } = req.body;
-
-    const result = validationResult(req);
-
-    if (!result.isEmpty()) {
-      //const errorMessages = errors.array().map((i) => i.msg);
-      return res.render('form-signup', {
-        title: 'Formið mitt',
-        errors: result.errors,
-        data: { name, comment, events },
-      })
-    }
-    return next();
-  }
+// app.use(`/:${slug}`)
 
 app.get('/', async (req,res) => {
-  const eventz = await getEvents(pool)
+  const eventz = await getEvents()
   res.render('form-signup', {
     title: 'Formið mitt',
     errors: [],
@@ -87,26 +165,6 @@ app.get('/', async (req,res) => {
             events: eventz}
   })
 })
-
-const postComment = async (req,res) => {
-  const { name, comment, event } = req.body;
-
-  const created = await createRegistration({ name, comment, event }, pool)
-
-  if (created) {
-    return res.send('<p>Skráning móttekin!</p>')
-  }
-
-  const eventz = await getEvents(pool)
-
-  const events = (event === undefined) ? event : eventz;
-
-  return res.render('form-signup', {
-    title: 'Formið mitt',
-    errors: [{ param: '', msg: 'Gat ekki búið til skráningu'}],
-    data: { name, comment, events },
-  })
-}
 
 app.post('/post', validation, results, postComment)
 

@@ -1,4 +1,5 @@
 import { readFile } from 'fs/promises';
+// eslint-disable-next-line import/no-unresolved
 import pg from 'pg';
 
 const SCHEMA_FILE = './sql/schema.sql';
@@ -23,12 +24,13 @@ pool.on('error', (err) => {
   process.exit(-1);
 });
 
-export async function query(q, values = []) {
+export async function query(q, values) {
   let client;
+
   try {
     client = await pool.connect();
   } catch (e) {
-    console.error('unable to get client from pool', e);
+    console.error('Unable to connect', e);
     return null;
   }
 
@@ -36,13 +38,53 @@ export async function query(q, values = []) {
     const result = await client.query(q, values);
     return result;
   } catch (e) {
-    if (nodeEnv !== 'test') {
-      console.error('unable to query', e);
-    }
+    console.error('Error running query', e);
     return null;
   } finally {
     client.release();
   }
+}
+
+export async function select(q) {
+  let client;
+
+  try {
+    client = await pool.connect();
+  } catch (e) {
+    console.error('Unable to connect', e);
+    return null;
+  }
+
+  try {
+    const result = await client.query(q);
+    return result;
+  } catch (e) {
+    console.error('Error running query', e);
+    return null;
+  } finally {
+    client.release();
+  }
+}
+export async function createRegistration({ name, comment, event }) {
+  const q = `
+    INSERT INTO
+      signups(name, comment, event)
+    VALUES
+      ($1, $2, $3)
+    RETURNING *`;
+  const values = [name, comment, event];
+
+  const result = await query(q, values, pool);
+  return result !== null;
+}
+
+export async function getEvents() {
+  const eventQuery = 'select id, name from events';
+  const eventIDs = await select(eventQuery, pool)
+  const eventz = [];
+  eventIDs.rows.forEach(row => {
+  eventz.push({id: row.id, name: row.name})})
+  return eventz;
 }
 
 export async function createSchema(schemaFile = SCHEMA_FILE) {
