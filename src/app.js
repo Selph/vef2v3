@@ -54,14 +54,14 @@ app.locals.isInvalid = isInvalid;
 // TODO admin routes
 //app.use(`/:${slug}`)
 
-const eventz = await getEvents(pool)
-
 const validation = [
   body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt')
 ]
 
 const results =
-  (req, res, next) => {
+  async (req, res, next) => {
+    const eventz = await getEvents(pool)
+
     const { name = '', comment = '', events = eventz } = req.body;
 
     const result = validationResult(req);
@@ -78,6 +78,7 @@ const results =
   }
 
 app.get('/', async (req,res) => {
+  const eventz = await getEvents(pool)
   res.render('form-signup', {
     title: 'Formið mitt',
     errors: [],
@@ -95,6 +96,8 @@ const postComment = async (req,res) => {
   if (created) {
     return res.send('<p>Skráning móttekin!</p>')
   }
+
+  const eventz = await getEvents(pool)
 
   const events = (event === undefined) ? event : eventz;
 
