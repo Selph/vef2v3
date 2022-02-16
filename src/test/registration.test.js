@@ -1,10 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import { validationResult } from 'express-validator';
-import {
-  registrationValidationMiddleware,
-  xssSanitizationMiddleware,
-} from '../routes/index-routes';
-
+import { validation as val } from '../lib/validation.js';
+import { sanitation as sal } from '../lib/sanitation.js';
 // Hjálparfall sem leyfir okkur að testa express-validator middleware
 // https://stackoverflow.com/questions/28769200/unit-testing-validation-with-express-validator
 async function applyAllMiddlewares(req, middlewares) {
@@ -24,10 +21,9 @@ describe('registration', () => {
         name: '',
       },
     };
+    const vally = [val]; // TODO Sækja á réttan stað
 
-    const registrationValidationMiddleware = []; // TODO Sækja á réttan stað
-
-    await applyAllMiddlewares(req, );
+    await applyAllMiddlewares(req, vally);
 
     const validation = validationResult(req);
 
@@ -41,9 +37,9 @@ describe('registration', () => {
       },
     };
 
-    const xssSanitizationMiddleware = []; // TODO Sækja á réttan stað
+    const sally = [sal]; // TODO Sækja á réttan stað
 
-    await applyAllMiddlewares(req, xssSanitizationMiddleware);
+    await applyAllMiddlewares(req, sally);
 
     expect(req.body.name).toBe('&lt;script&gt;alert(1)&lt;/script&gt;');
   });

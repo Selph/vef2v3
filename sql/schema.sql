@@ -1,4 +1,7 @@
+DROP TABLE IF EXISTS signups;
+
 DROP TABLE IF EXISTS events;
+
 
 CREATE TABLE IF NOT EXISTS events(
   id serial primary key,
@@ -12,8 +15,6 @@ CREATE TABLE IF NOT EXISTS events(
 insert into events(name,slug,description) values('Dómsdagur', 'domsdagur', 'Heimurinn mun enda næstkomandi mánudag, komdu og njóttu lokastunda alheims heim okkur');
 insert into events(name,slug,description) values('Guðjón kemur heim', 'gudjon-kemur-heim', 'Guðjón okkar er loksins að koma heim eftir langa ferð. Í tilefni þess ætlum við öll að fara í sjósund, Guðjón elskar sjósund.');
 insert into events(name,slug,description) values('Blómadagurinn mikli', 'blomadagurinn-mikli', 'Nú er komið að hinum árlega blómadegi. Komdu með blóm og verum saman með blóm.');
-
-DROP TABLE IF EXISTS signups;
 
 CREATE TABLE IF NOT EXISTS signups (
   id serial primary key,

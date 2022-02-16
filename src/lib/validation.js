@@ -1,46 +1,77 @@
 import { body, validationResult } from 'express-validator';
-import { createRegistration, getEvents } from './db.js';
+import { createEvent, createRegistration, getEventById, listEvents, listSignupsById } from './db.js';
 
 
 export const validation = [
-  body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt')
+  body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt'),
 ]
 
-export const results =
-  async (req, res, next) => {
-    const eventz = await getEvents()
+export const validationEvent = [
+  body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt'),
+  body('description').isLength({ min: 1}).withMessage('Lýsing má ekki vera tóm')
+]
 
-    const { name = '', comment = '', events = eventz } = req.body;
+export const results = async (req, res, next) => {
+    const { name = '', comment = '', event = '' } = req.body;
 
     const result = validationResult(req);
 
+    const signups = await listSignupsById(event);
+    const eventz = await getEventById(event);
+
     if (!result.isEmpty()) {
-      //const errorMessages = errors.array().map((i) => i.msg);
       return res.render('form-signup', {
-        title: 'Formið mitt',
+        title: eventz[0].name,
+        description: eventz[0].description,
+        id: eventz[0].id,
+        slug: eventz[0].slug,
         errors: result.errors,
-        data: { name, comment, events },
+        signups,
+        data: { name, comment, event},
       })
     }
     return next();
   }
 
-  export const postComment = async (req,res) => {
-    const { name, comment, event } = req.body;
+  export const resultsEvent = async (req, res, next) => {
+    const { name = '', description = '' } = req.body;
+    const result = validationResult(req);
 
-    const created = await createRegistration({ name, comment, event })
+    const events = await listEvents();
 
-    if (created) {
-      return res.send('<p>Skráning móttekin!</p>')
+    if (!result.isEmpty()) {
+      return res.render('admin', {
+        title: 'Viðburðaumsjón',
+        events,
+        errors: result.errors,
+        data: { name,
+                description,
+                errors: result.errors,
+                username: req.cookies.username
+              }
+        })
     }
+    return next();
+  }
 
-    const eventz = await getEvents()
+  export const resultsChange = async (req, res, next) => {
+    let { event = '' } = req.body;
 
-    const events = (event === undefined) ? event : eventz;
+    const result = validationResult(req);
 
-    return res.render('form-signup', {
-      title: 'Formið mitt',
-      errors: [{ param: '', msg: 'Gat ekki búið til skráningu'}],
-      data: { name, comment, events },
-    })
+    event = await getEventById(event)
+
+    if (!result.isEmpty()) {
+      return res.render('form-event', {
+        title: req.name,
+        id: event[0].id,
+        slug: event[0].slug,
+        changed: true,
+        errors: result.errors,
+        data: { name: req.body.name,
+                description: req.body.description,
+              },
+      });
+    }
+    return next();
   }

@@ -2,4 +2,21 @@
 
 <h1><%= title %></h1>
 
+<% if (events.length === 0) { %>
+  <p>Engir viðburðir!</p>
+<% } else { %>
+  <h2>Viðburðir á næstunni:</h2>
+<ul>
+<% events.forEach((event) => { %>
+  <li><a href="/<%= event.slug %>"><%= event.name %></a></li>
+  <p class="event-description"><%= event.description %></>
+<% }) %>
+</ul>
+<hr>
+<div class="login">
+  <p class="login-text"><a href="/admin/login">Innskráning stjórnanda</a></p>
+</div>
+<% } %>
+
+
 <%- include('footer') -%>

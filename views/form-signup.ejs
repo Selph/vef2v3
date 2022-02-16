@@ -1,33 +1,50 @@
 <%- include('header') -%>
-<form method="post" action="/post" enctype="application/x-www-form-urlencoded">
+
+<h1><%= title %></h1>
+<p class="desc"><%= description %></p>
+
+<h2>Skráningar á viðburð</h2>
+<% if (signups.length === 0) { %>
+  <p>Enginn skráður á viðburð... enþá!</p>
+<% } else { %>
+<ul>
+<% signups.forEach((signup) => { %>
+  <li><%= signup.name %></li>
+  <p class="event-description"><%= signup.comment %></p>
+<% }) %>
+</ul>
+<% } %>
+
+<h2>Skráðu þig</h2>
+
+<form method="post" action="/<%= slug %>" enctype="application/x-www-form-urlencoded">
   <div class="field<% locals.isInvalid('name', errors) ? ' field--invalid' : '' %>">
-    <label for="name">Nafn*</label>
+    <p class="login-type">Nafn*</p>
     <input type="text" name="name" id="name" value="<%= data.name %>" class="">
   </div>
 
   <div class="field<% locals.isInvalid('comment', errors) ? ' field--invalid' : '' %>">
-    <label for="comment">Athugasemd</label>
-    <input type="text" name="comment" id="comment" value="<%= data.comment %>" class="">
+    <p class="login-type">Athugasemd</p>
+    <input type="text" name="comment" id="comment" value="<%= data.comment %>" class="comment">
   </div>
 
-  <div class="field<% locals.isInvalid('comment', errors) ? ' field--invalid' : '' %>">
-    <label for="event">Viðburður</label>
-    <select name="event" id="event" value="<%= data.events %>" class="">
-      <% data.events.forEach(event => { %>
-        <option value="<%= event.id %>"><%= event.name %></option>
-      <% })%>
-    </select>
-  </div>
+    <input type="hidden" name="event" id="event" value="<%= id %>">
 
   <% if (errors.length > 0) { %>
-    <h2 class="errors__title">Villur við skráningu:</h2>
+    <h3 class="errors__title">Villur við skráningu:</h4>
     <ul class="errors">
       <% errors.forEach((error) => { %>
-        <li class"error"><label for="<%= error.param %>"><%= error.msg%></label></li>
+        <li class="error"><label for="<%= error.param %>"><%= error.msg%></label></li>
       <% }) %>
     </ul>
   <% } %>
 
-  <button class="button button--large button--margin">Skrá</button>
+  <button class="button button--large button--margin">Skrá mig</button>
 </form>
+
+<hr>
+
+<div class="back">
+  <p class="back-text"><a href="/">Til baka</a></p>
+</div>
 <%- include('footer') -%>

@@ -1,24 +1,19 @@
 import dotenv from 'dotenv';
-import pg from 'pg';
 import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
+import cookieParser from 'cookie-parser';
 import { Strategy } from 'passport-local';
-import { body, validationResult } from 'express-validator';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { isInvalid } from './lib/template-helpers.js';
 import { indexRouter } from './routes/index-routes.js';
-import { getEvents} from './lib/db.js';
+import { router as adminRouter } from './routes/admin-routes.js';
 import {
   comparePasswords,
   findByUsername,
-  findById,
-  createUser
+  findById
 } from './lib/users.js';
-import { validation, results, postComment} from './lib/validation.js'
-import {  router as adminRouter } from './routes/admin-routes.js';
-import { sanitation } from './lib/sanitation.js';
 
 dotenv.config();
 
@@ -30,7 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 const {
   PORT: port = 3000,
   DATABASE_URL: databaseUrl,
-  SESSION_SECRET: sessionSecret = 'sdjafkahsdg',
+  // eslint-disable-next-line quotes
+  SESSION_SECRET: sessionSecret = `AE"&Q"Q-a{yH8l)X0nY0%S"%gp]InAx$qkvxO^JAr'A(8zykX8BH:GW+)2}3kjY`,
 } = process.env;
 
 if (!sessionSecret || !databaseUrl) {
@@ -45,7 +41,6 @@ app.use(session({
 }));
 
 const path = dirname(fileURLToPath(import.meta.url));
-const slug = undefined;
 
 app.use(express.static(join(path, '../public')));
 
@@ -63,8 +58,6 @@ async function strat(username, password, done) {
 
     // Verður annað hvort notandahlutur ef lykilorð rétt, eða false
     const result = await comparePasswords(password, user.password);
-
-    console.log('Pass Result :>> ', result)
 
     return done(null, result ? user : false);
   } catch (err) {
@@ -94,74 +87,15 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/admin', adminRouter)
-
-app.get('/login', (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.redirect('/');
-  }
-
-  let message = '';
-
-  // Athugum hvort einvher skilaboð séu til í session, ef svo er
-  // birtum þau og hreinsum skilaboð
-  if (req.session.messages && req.session.messages.length > 0) {
-    message = req.session.messages.join(', ');
-    req.session.messages = [];
-  }
-
-  return res.send(`
-    <form method="post" action="/login">
-      <label>Notendanafn: <input type="text" name="username"></label>
-      <label>Lykilorð: <input type="password" name="password"></label>
-      <button>Innskrá</button>
-    </form>
-    <p>${message}</p>
-  `);
-});
-
-app.post(
-  '/login',
-  passport.authenticate('local', {
-    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
-    failureRedirect: '/login',
-  }),
-  (req, res) => {
-    res.redirect('/admin');
-  },
-);
-
-app.get('logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
-});
-
 app.locals = {
   // TODO hjálparföll fyrir template
 };
 
 app.locals.isInvalid = isInvalid;
 
-// app.post(`/:${slug}`, (req,res) => {
-//   res.send(`${JSON.stringify(req.body)}`)
-// })
-
-// app.use('/', indexRouter);
-// TODO admin routes
-// app.use(`/:${slug}`)
-
-app.get('/', async (req,res) => {
-  const eventz = await getEvents()
-  res.render('form-signup', {
-    title: 'Formið mitt',
-    errors: [],
-    data: { name: '',
-            comment: '',
-            events: eventz}
-  })
-})
-
-app.post('/post', validation, results, sanitation, postComment)
+app.use('/admin', adminRouter)
+app.use('/', indexRouter);
+// app.use('/:slug', eventRouter);
 
 /** Middleware sem sér um 404 villur. */
 app.use((req, res) => {
@@ -171,11 +105,11 @@ app.use((req, res) => {
 
 /** Middleware sem sér um villumeðhöndlun. */
 // eslint-disable-next-line no-unused-vars
-// app.use((err, req, res, next) => {
-//   console.error(err);
-//   const title = 'Villa kom upp';
-//   res.status(500).render('error', { title });
-// });
+app.use((err, req, res, next) => {
+  console.error(err);
+  const title = 'Villa kom upp';
+  res.status(500).render('error', { title });
+});
 
 app.listen(port, () => {
   console.info(`Server running at http://localhost:${port}/`);

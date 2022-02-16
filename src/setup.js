@@ -1,6 +1,14 @@
+import { promises } from 'fs';
+import { query, end } from './lib/db.js'
+
+const schemaFile = './sql/schema.sql'
 
 async function create() {
-  // TODO setja upp gagnagrun + gögn
+  const data = await promises.readFile(schemaFile)
+
+  await query(data.toString('utf-8'));
+
+  await end();
 }
 
 create().catch((err) => {

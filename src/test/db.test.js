@@ -4,7 +4,9 @@ import {
   createSchema,
   dropSchema,
   end,
-} from '../lib/db';
+  createEvent,
+  getEventById,
+} from '../lib/db.js';
 
 /**
  * Hér er test gagnagrunnur búinn til og hent áður en test eru keyrð.
@@ -23,6 +25,16 @@ describe('db', () => {
   });
 
   it('creates a valid event and returns it', async () => {
-    // TODO útfæra test
+    const name = 'Sundferðin mikla';
+    const description = 'Nú ætlum við að synda yfir Þingvallavatn.'
+    const created = await createEvent({name, description});
+
+    let event;
+
+    if (created) {
+      event = getEventById(4);
+    }
+
+    expect(event).toEqual([1023456.789, 2, 3]);
   });
 });

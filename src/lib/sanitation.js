@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body } from 'express-validator';
 import xss from 'xss';
 
 export const sanitation = [
