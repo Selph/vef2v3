@@ -21,7 +21,7 @@ describe('registration', () => {
         name: '',
       },
     };
-    const vally = [val]; // TODO Sækja á réttan stað
+    const vally = val; // TODO Sækja á réttan stað
 
     await applyAllMiddlewares(req, vally);
 
@@ -37,7 +37,7 @@ describe('registration', () => {
       },
     };
 
-    const sally = [sal]; // TODO Sækja á réttan stað
+    const sally = sal; // TODO Sækja á réttan stað
 
     await applyAllMiddlewares(req, sally);
 

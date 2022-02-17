@@ -1,5 +1,5 @@
 import { body, validationResult } from 'express-validator';
-import { createEvent, createRegistration, getEventById, listEvents, listSignupsById } from './db.js';
+import { getEventById, listEvents, listSignupsById } from './db.js';
 
 
 export const validation = [

@@ -32,9 +32,12 @@ describe('db', () => {
     let event;
 
     if (created) {
-      event = getEventById(4);
+      event = await getEventById(4);
     }
 
-    expect(event).toEqual([1023456.789, 2, 3]);
+    expect(event[0].name).toEqual('Sundferðin mikla');
+    expect(event[0].slug).toEqual('sundferin-mikla');
+    expect(event[0].description).toEqual('Nú ætlum við að synda yfir Þingvallavatn.');
+    expect(event[0].id).toEqual(4);
   });
 });

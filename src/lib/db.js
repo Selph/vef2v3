@@ -139,8 +139,6 @@ export async function updateEvent({ name, description, id }) {
     WHERE id = $4;`;
   const values = [name, description, slug, idz];
 
-  console.log(values)
-
   const result = await query(q, values);
 
   return result !== null;

@@ -1,6 +1,12 @@
 import express from 'express';
 import { catchErrors } from '../lib/catch-errors.js';
-import { createRegistration, getEvent, getEventById, listEvents, listSignups, listSignupsById } from '../lib/db.js'
+import { createRegistration,
+        getEvent,
+        getEventById,
+        listEvents,
+        listSignups,
+        listSignupsById
+      } from '../lib/db.js'
 import { sanitation } from '../lib/sanitation.js';
 import { results, validation } from '../lib/validation.js';
 

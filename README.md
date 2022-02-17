@@ -30,11 +30,51 @@ npm run coverage
 npm run lint
 ```
 
+## Tæki og tól
 
+### Dependencies
 
-> Útgáfa 0.2
+`bcrypt`
+`cookie-parser`
+`dotenv`
+`dotenv-cli`
+`ejs`
+`express`
+`express-session`
+`express-validator`
+`passport`
+`passport-local`
+`pg`
+`xss`
+
+### Dev dependencies
+
+`concurrently`
+`eslint`
+`eslint-config-airbnb-base`
+`eslint-config-prettier`
+`eslint-plugin-import`
+`jest`
+`nodemon`
+`prettier`
+`stylelint`
+`stylelint-config-sass-guidelines`
+`stylelint-config-standard`
+
+## Admin aðgangur
+
+notendanafn: `admin`
+lykilorð:    `1234`
+
+## env skrár
+
+Það þarf að setja réttar upplýsingar í .env.test skrárnar
+
+> Útgáfa 1.0
 
 | Útgáfa | Breyting      |
 | ------ | ------------- |
 | 0.1    | Bæta Readme   |
 | 0.2    | Functional    |
+| 0.9    | Test eftir    |
+| 1.0    | Version 1     |

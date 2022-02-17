@@ -11,7 +11,7 @@ export function ensureLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.cookie("username", `${req.cookies.username}`)
+  res.cookie('username', `${req.cookies.username}`)
   return res.redirect('/login');
 }
 
