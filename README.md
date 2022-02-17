@@ -70,6 +70,10 @@ lykilorð:    `1234`
 
 Það þarf að setja réttar upplýsingar í .env.test skrárnar
 
+## Heroku
+
+https://vef2v2-vidburdakerfi.herokuapp.com
+
 > Útgáfa 1.0
 
 | Útgáfa | Breyting      |
