@@ -21,7 +21,7 @@
 
   <div class="field<% locals.isInvalid('comment', errors) ? ' field--invalid' : '' %>">
     <p class="login-type">Lýsing*</p>
-    <input type="text" name="description" id="description" value="<%= data.description %>" class="comment">
+    <textarea name="description" id="description" class="comment" ><%= data.description %></textarea>
   </div>
 
   <% if (errors.length > 0) { %>
