@@ -4,11 +4,15 @@ import { getEventById, listEvents, listSignupsById } from './db.js';
 
 export const validation = [
   body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt'),
+  body('name').isLength({ max: 64 }).withMessage('Nafn má ekki vera meira en 64 stafir'),
+  body('comment').isLength({ max: 400 }).withMessage('Nafn má ekki vera meira en 400 stafir'),
 ]
 
 export const validationEvent = [
   body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt'),
+  body('name').isLength({ max: 64 }).withMessage('Nafn má ekki vera meira en 64 stafir'),
   body('description').isLength({ min: 1}).withMessage('Lýsing má ekki vera tóm')
+  body('description').isLength({ max: 400}).withMessage('Lýsing má ekki vera tóm')
 ]
 
 export const results = async (req, res, next) => {
