@@ -33,6 +33,7 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE IF NOT EXISTS users (
   id serial primary key,
+  name character varying(64) not null,
   username character varying(64) not null unique,
   password character varying(256) not null
 );

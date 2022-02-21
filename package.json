@@ -1,5 +1,5 @@
 {
-  "name": "vef2-2022-v2-synilausn",
+  "name": "vef2v3",
   "version": "1.0.0",
   "description": "## Express og útlit",
   "type": "module",
@@ -48,10 +48,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Selph/vef2v2.git"
+    "url": "git+https://github.com/Selph/vef2v3.git"
   },
   "bugs": {
-    "url": "https://github.com/Selph/vef2v2/issues"
+    "url": "https://github.com/Selph/vef2v3/issues"
   },
-  "homepage": "https://github.com/Selph/vef2v2#readme"
+  "homepage": "https://github.com/Selph/vef2v3#readme"
 }
