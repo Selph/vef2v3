@@ -1,4 +1,4 @@
-# Vefforritun 2, 2022. Verkefni 2: Viðburðakerfi
+# Vefforritun 2, 2022. Hópverkefni 1: Veitingastaðurinn RFC
 
 ## Setup
 
@@ -6,7 +6,7 @@ Keyrt með:
 
 ```bash
 npm install
-createdb vef2v2
+createdb vef2h1
 # setja rétt DATABASE_URL í .env
 npm run setup
 npm run dev
@@ -23,43 +23,80 @@ heroku run npm run setup
 
 ## Skipanir
 
-Til að athuga hvort test séu rétt útfærð keyra coverage, fyrir eslint og stylelint keyra lint
+### Athuganir
+
+Til að athuga hvort test séu rétt útfærð keyra test og fyrir eslint keyra lint
 
 ```bash
-npm run coverage
+npm run test
 npm run lint
 ```
+
+### cURL
+
+#### Notendaumsjón, vefþjónustur
+
+* `/`
+  * `GET` ```bash
+  curl --location --request GET 'http://localhost:3000/'
+  ```
+* `/users/`
+  * `GET` skilar síðu af notendum, aðeins ef notandi sem framkvæmir er stjórnandi
+* `/users/:id`
+  * `GET` skilar notanda, aðeins ef notandi sem framkvæmir er stjórnandi
+* `/users/register`
+  * `POST` staðfestir og býr til notanda. Skilar auðkenni og nafn. Notandi sem búinn er til skal aldrei vera stjórnandi
+* `/users/login`
+  * `POST` með notandanafni og lykilorði skilar token ef gögn rétt
+* `/users/me`
+  * `GET` skilar upplýsingum um notanda sem á token, auðkenni og nafn, aðeins ef notandi innskráður
+
+Aldrei skal skila eða sýna hash fyrir lykilorð.
+
+#### Viðburðir
+
+* `/events/`
+  * `GET` skilar síðu af viðburðum
+  * `POST` býr til vibðurð, aðeins ef innskráður notandi
+* `/events/:id`
+  * `GET` skilar viðburð
+  * `PATCH` uppfærir viðburð, a.m.k. eitt gildi, aðeins ef notandi bjó til viðburð eða er stjórnandi
+  * `DELETE` eyðir viðburð, aðeins ef notandi bjó til viðburð eða er stjórnandi
+
+#### Skráningar
+
+* `/events/:id/register`
+  * `POST` skráir notanda á viðburð, aðeins ef innskráður notandi
+  * `DELETE` afskráir notanda af viðburði, aðeins ef innskráður notandi og til skráning
 
 ## Tæki og tól
 
 ### Dependencies
 
-`bcrypt`
-`cookie-parser`
-`dotenv`
-`dotenv-cli`
-`ejs`
-`express`
-`express-session`
-`express-validator`
-`passport`
-`passport-local`
-`pg`
-`xss`
+```
+bcrypt
+dotenv
+dotenv-cli
+express
+express-validator
+passport
+passport-jwt
+passport-local
+pg
+xss
+```
 
 ### Dev dependencies
 
-`concurrently`
-`eslint`
-`eslint-config-airbnb-base`
-`eslint-config-prettier`
-`eslint-plugin-import`
-`jest`
-`nodemon`
-`prettier`
-`stylelint`
-`stylelint-config-sass-guidelines`
-`stylelint-config-standard`
+```concurrently
+eslint
+eslint-config-airbnb-base
+eslint-config-prettier
+eslint-plugin-import
+jest
+node-fetch
+nodemon
+```
 
 ## Admin aðgangur
 
@@ -68,17 +105,27 @@ lykilorð:    `1234`
 
 ## env skrár
 
-Það þarf að setja réttar upplýsingar í .env.test skrárnar
+Það þarf að setja réttar upplýsingar í .env og .env.test skrárnar:
+
+```
+DATABASE_URL
+JWT_SECRET
+TOKEN_LIFETIME
+```
 
 ## Heroku
 
-https://vef2v2-vidburdakerfi.herokuapp.com
+https://vef2h1-rfc.herokuapp.com
 
-> Útgáfa 1.0
+> Útgáfa 0.5
 
-| Útgáfa | Breyting      |
-| ------ | ------------- |
-| 0.1    | Bæta Readme   |
-| 0.2    | Functional    |
-| 0.9    | Test eftir    |
-| 1.0    | Version 1     |
+| Útgáfa | Breyting        |
+| ------ | --------------- |
+| 0.1    | Bæta Readme     |
+| 0.2    | Base files      |
+| 0.3    | Database        |
+| 0.4    | Users           |
+| 0.5    | Events          |
+| 0.6    | cURL            |
+| 0.7    | tests           |
+| 1.0    | Finalize Readme |

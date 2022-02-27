@@ -1,0 +1,58 @@
+{
+  "events": {
+    "events": {
+      "href": "/events",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    "event": {
+      "href": "/events/{id}",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    "register": {
+      "href": "/events/{id}/register",
+      "methods": [
+        "POST",
+        "DELETE"
+      ]
+    }
+  },
+  "users": {
+    "users": {
+      "href": "/users",
+      "methods": [
+        "GET"
+      ]
+    },
+    "user": {
+      "href": "/users/{id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    "register": {
+      "href": "/users/register",
+      "methods": [
+        "POST"
+      ]
+    },
+    "login": {
+      "href": "/users/login",
+      "methods": [
+        "POST"
+      ]
+    },
+    "me": {
+      "href": "/users/me",
+      "methods": [
+        "GET"
+      ]
+    }
+  }
+}

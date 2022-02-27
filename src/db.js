@@ -1,4 +1,5 @@
 import { readFile } from 'fs/promises';
+import bcrypt from 'bcrypt';
 // eslint-disable-next-line import/no-unresolved
 import pg from 'pg';
 
@@ -88,17 +89,66 @@ export async function select(q) {
   }
 }
 
-export async function createRegistration({ name, comment, event }) {
+export async function findById(id) {
+  const q = 'SELECT * FROM users WHERE id = $1';
+
+  try {
+    const result = await query(q, [id]);
+
+    if (result.rowCount === 1) {
+      return result.rows[0];
+    }
+  } catch (e) {
+    console.error('Gat ekki fundið notanda eftir id');
+  }
+
+  return null;
+}
+
+export async function comparePasswords(password, hash) {
+  const result = await bcrypt.compare(password, hash);
+  return result;
+}
+
+export async function findByUsername(username) {
+  const q = 'SELECT * FROM users WHERE username = $1';
+
+  try {
+    const result = await query(q, [username]);
+
+    if (result.rowCount === 1) {
+      return result.rows[0];
+    }
+  } catch (e) {
+    console.error('Gat ekki fundið notanda eftir notendnafni');
+    return null;
+  }
+
+  return false;
+}
+
+export async function createRegistration({ username, comment, event }) {
   const q = `
     INSERT INTO
-      signups(name, comment, event)
+      signups(username, comment, event)
     VALUES
       ($1, $2, $3)
     RETURNING *`;
-  const values = [name, comment, event];
+  const values = [username, comment, event];
 
   const result = await query(q, values);
   return result !== null;
+}
+
+export async function getRegistration({ username, event}) {
+  const q = `select * from signups
+             where username = $1
+             and   event = $2`
+  const values = [username, event];
+
+  const result = await query(q, values);
+
+  return result.rowCount !== 0;
 }
 
 function createSlug(name) {
@@ -117,14 +167,14 @@ function createSlug(name) {
   return str;
 }
 
-export async function createEvent({ name, description}) {
+export async function createEvent({ name, description, creator}) {
   const q = `
     INSERT INTO
-      events(name, description, slug)
+      events(name, description, slug, creator)
     VALUES
-      ($1, $2, $3)
+      ($1, $2, $3, $4)
     RETURNING *`;
-  const values = [name, description, createSlug(name)];
+  const values = [name, description, createSlug(name), creator];
 
   const result = await query(q, values);
   return result !== null;
@@ -187,15 +237,6 @@ export async function listSignupsById(id){
   return result;
 }
 
-export async function getEvents() {
-  const eventQuery = 'select id, name from events';
-  const eventIDs = await select(eventQuery, pool)
-  const eventz = [];
-  eventIDs.rows.forEach(row => {
-  eventz.push({id: row.id, name: row.name})})
-  return eventz;
-}
-
 export async function getEvent(slug) {
   let result = [];
   try {
@@ -239,6 +280,38 @@ export async function dropSchema(dropFile = DROP_SCHEMA_FILE) {
 
   return queryOG(data.toString('utf-8'));
 }
+
+export async function deleteQuery(_query, values = []) {
+  const result = await query(_query, values);
+  return result.rowCount;
+}
+
+export async function conditionalUpdate(table, id, fields, values) {
+  const filteredFields = fields.filter((i) => typeof i === 'string');
+  const filteredValues = values
+  .filter((i) => typeof i === 'string'
+  || typeof i === 'number'
+  || i instanceof Date);
+  if (filteredFields.length === 0) {
+  return false;
+  }
+  if (filteredFields.length !== filteredValues.length) {
+  throw new Error('fields and values must be of equal length');
+  }
+  // id is field = 1
+  const updates = filteredFields.map((field, i) => `${field} = $${i + 2}`);
+  const q = `
+      UPDATE ${table}
+        SET ${updates.join(', ')}
+      WHERE
+        slug = $1
+      RETURNING *
+      `;
+  const queryValues = [id].concat(filteredValues);
+  console.info('Conditional update', q, queryValues);
+  const result = await query(q, queryValues);
+  return result;
+  }
 
 export async function end() {
   await pool.end();
