@@ -37,9 +37,8 @@ npm run lint
 #### Notendaumsjón, vefþjónustur
 
 * `/`
-  * `GET` ```bash
-  curl --location --request GET 'http://localhost:3000/'
-  ```
+  * `GET` 
+    * `curl --location --request GET 'http://localhost:3000/'`
 * `/users/`
   * `GET` skilar síðu af notendum, aðeins ef notandi sem framkvæmir er stjórnandi
 * `/users/:id`
