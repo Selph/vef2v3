@@ -40,15 +40,28 @@ npm run lint
   * `GET` 
     * `curl --location --request GET 'http://localhost:3000/'`
 * `/users/`
-  * `GET` skilar síðu af notendum, aðeins ef notandi sem framkvæmir er stjórnandi
+  * `GET` 
+    * `curl --location --request GET 'http://localhost:3000/users'`
 * `/users/:id`
-  * `GET` skilar notanda, aðeins ef notandi sem framkvæmir er stjórnandi
+  * `GET` 
+    * `curl --location --request GET 'http://localhost:3000/users/1'`
 * `/users/register`
-  * `POST` staðfestir og býr til notanda. Skilar auðkenni og nafn. Notandi sem búinn er til skal aldrei vera stjórnandi
+  * `POST` 
+    * ```
+    curl --location --request POST 'http://localhost:3000/users/register' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Kevin Bacon",
+    "username": "baconstation69",
+    "password": "xmen"
+}'
+```
 * `/users/login`
-  * `POST` með notandanafni og lykilorði skilar token ef gögn rétt
+  * `POST` 
+    * ``
 * `/users/me`
-  * `GET` skilar upplýsingum um notanda sem á token, auðkenni og nafn, aðeins ef notandi innskráður
+  * `GET` 
+    * ``
 
 Aldrei skal skila eða sýna hash fyrir lykilorð.
 
