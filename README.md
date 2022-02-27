@@ -47,7 +47,7 @@ npm run lint
     * `curl --location --request GET 'http://localhost:3000/users/1'`
 * `/users/register`
   * `POST` 
-    * ```
+    * ``
     curl --location --request POST 'http://localhost:3000/users/register' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -55,7 +55,7 @@ npm run lint
     "username": "baconstation69",
     "password": "xmen"
 }'
-```
+``
 * `/users/login`
   * `POST` 
     * ``
