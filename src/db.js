@@ -151,7 +151,7 @@ export async function getRegistration({ username, event}) {
   return result.rowCount !== 0;
 }
 
-function createSlug(name) {
+export function createSlug(name) {
   let str = name.replace(/^\s+|\s+$/g, ''); // trim
   str = str.toLowerCase();
 

@@ -29,7 +29,7 @@ async function getEvents(req, res) {
     events[i].link = `/events/${events[i].slug}`;
   }
 
-  return res.json(events);
+  return res.status(200).json(events);
 }
 
 async function insertEvent(req, res) {

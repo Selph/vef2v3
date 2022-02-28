@@ -25,11 +25,11 @@ async function getUser(req, res) {
 }
 
 async function getMyUser(req,res) {
-  const userQuery = 'select id, name, from users where id=$1';
+  const userQuery = 'select id, name from users where id=$1';
   const params = [req.params.id]
   const users = await query(userQuery, params);
 
-  const { name } = users.rows[0];
+  const { name } = users.rows;
 
   const payload = { id: users.rows.id };
   const tokenOptions = { expiresIn: tokenLifetime };

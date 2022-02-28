@@ -8,6 +8,7 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 
 import { stat } from '../utils/fs-helpers';
+import { createSlug } from '../db';
 
 const basePath = dirname(fileURLToPath(import.meta.url));
 
@@ -88,7 +89,7 @@ export async function deleteAndParse(path, data, token = null) {
 }
 
 export async function loginAndReturnToken(data) {
-  const { result } = await postAndParse('/users/login', data);
+  const { result } = await postAndParse('/users/login', data)
 
   if (result && result.token) {
     return result.token;
@@ -99,11 +100,11 @@ export async function loginAndReturnToken(data) {
 
 export async function createRandomUserAndReturnWithToken() {
   const rnd = randomValue();
+  const name = `nafn${rnd}`
   const username = `user${rnd}`;
-  const email = `user${rnd}@example.org`;
   const password = '1234567890';
 
-  const data = { username, password, email };
+  const data = { name, username, password };
   const { result } = await postAndParse('/users/register', data);
   const token = await loginAndReturnToken({ username, password });
 
@@ -111,6 +112,34 @@ export async function createRandomUserAndReturnWithToken() {
     user: result,
     token,
   };
+}
+
+export async function createRandomEventAndReturnSlug() {
+  const rnd = randomValue();
+  const name = `titill${rnd}`
+  const description = `description${rnd}`;
+
+  const username = 'admin'
+  const password = '1234'
+
+  const token = await loginAndReturnToken({ username, password });
+
+  const data = { name, description };
+  const { result } = await postAndParse('/events', data, token);
+
+  const slug = createSlug(name);
+  return slug;
+}
+
+export async function createRandomUser() {
+  const rnd = randomValue();
+  const name = `nafn${rnd}`
+  const username = `user${rnd}`;
+  const password = '1234567890';
+
+  const data = { name, username, password };
+
+  return { data };
 }
 
 export async function loginAsHardcodedAdminAndReturnToken() {

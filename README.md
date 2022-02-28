@@ -59,27 +59,73 @@ npm run lint
 * `/users/login`
   * `POST` 
     * ``
+    curl --location --request POST 'http://localhost:3000/users/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "username": "admin",
+    "password": "1234"
+}'
+    ``
 * `/users/me`
   * `GET` 
-    * ``
+    * `curl --location --request GET 'http://localhost:3000/me'`
 
 Aldrei skal skila eða sýna hash fyrir lykilorð.
 
 #### Viðburðir
 
 * `/events/`
-  * `GET` skilar síðu af viðburðum
-  * `POST` býr til vibðurð, aðeins ef innskráður notandi
+  * `GET` 
+    * `curl --location --request GET 'http://localhost:3000/events'`
+  * `POST` 
+    * ``
+    curl --location --request POST 'http://localhost:3000/events' \
+--header 'Authorization: Bearer TOKENHÉR' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Stóri viðburðurinn",
+    "description": "Þessi verður stór"
+}'
+    ``
 * `/events/:id`
-  * `GET` skilar viðburð
-  * `PATCH` uppfærir viðburð, a.m.k. eitt gildi, aðeins ef notandi bjó til viðburð eða er stjórnandi
-  * `DELETE` eyðir viðburð, aðeins ef notandi bjó til viðburð eða er stjórnandi
+  * `GET` 
+    * `curl --location --request GET 'http://localhost:3000/events/domsdagur'`
+  * `PATCH` 
+    * ``
+    curl --location --request PATCH 'http://localhost:3000/events/stori-vibururinn' \
+--header 'Authorization: Bearer TOKENHÉR \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Megas viðburðurinn"
+}'
+    ``
+  * `DELETE` 
+    * ``
+    curl --location --request DELETE 'http://localhost:3000/events/blomadagurinn-mikli' \
+--header 'Authorization: Bearer TOKENHÉR'
+    ``
 
 #### Skráningar
 
 * `/events/:id/register`
-  * `POST` skráir notanda á viðburð, aðeins ef innskráður notandi
-  * `DELETE` afskráir notanda af viðburði, aðeins ef innskráður notandi og til skráning
+  * `POST` 
+    * ``
+    curl --location --request POST 'http://localhost:3000/events/megas-vibururinn/register' \
+--header 'Authorization: Bearer TOKENHÉR' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "comment": "Yo blazin"
+}'
+``
+  * `DELETE` 
+    * ``
+    curl --location --request DELETE 'http://localhost:3000/events/megas-vibururinn/register' \
+--header 'Authorization: Bearer TOKENHÉR' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "comment": "Yo blazin"
+}'
+    ``
 
 ## Tæki og tól
 
@@ -139,5 +185,4 @@ https://vef2h1-rfc.herokuapp.com
 | 0.4    | Users           |
 | 0.5    | Events          |
 | 0.6    | cURL            |
-| 0.7    | tests           |
-| 1.0    | Finalize Readme |
+| 1.0    | tests           |
