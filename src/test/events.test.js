@@ -1,12 +1,16 @@
 import { test, describe, expect } from '@jest/globals';
 
-import { createRandomEventAndReturnSlug, deleteAndParse, fetchAndParse, loginAsHardcodedAdminAndReturnToken, patchAndParse, postAndParse } from './utils.js';
+import { createRandomEventAndReturnSlug,
+         deleteAndParse,
+         fetchAndParse,
+         loginAsHardcodedAdminAndReturnToken,
+         patchAndParse,
+         postAndParse } from './utils.js';
 
 describe('events', () => {
 
   const eventName = 'Jónshátíð'
-  const eventDescription = 'Jóni finnst gaman að skemmta sér';
-  const eventCreator = 'admin'
+  const eventDescription = 'Jóni finnst gaman að skemmta sér'
 
   test('GET /events', async () => {
     const { result, status } = await fetchAndParse('/events');

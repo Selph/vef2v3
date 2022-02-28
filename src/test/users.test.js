@@ -1,6 +1,10 @@
 import { test, describe, expect } from '@jest/globals';
 
-import { createRandomUser, createRandomUserAndReturnWithToken, fetchAndParse, loginAsHardcodedAdminAndReturnToken, postAndParse } from './utils.js';
+import { createRandomUser,
+         createRandomUserAndReturnWithToken,
+         fetchAndParse,
+         loginAsHardcodedAdminAndReturnToken,
+         postAndParse } from './utils.js';
 
 describe('/users', () => {
 

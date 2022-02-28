@@ -1,5 +1,5 @@
 import { promises } from 'fs';
-import { query, end } from './lib/db.js'
+import { query, end } from '../db.js'
 
 const schemaFile = './sql/schema.sql'
 

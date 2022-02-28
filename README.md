@@ -1,4 +1,4 @@
-# Vefforritun 2, 2022. Hópverkefni 1: Veitingastaðurinn RFC
+# Vefforritun 2, 2022. Verkefni 3: Viðburðakerfis vefþjónustur
 
 ## Setup
 
@@ -10,15 +10,6 @@ createdb vef2h1
 # setja rétt DATABASE_URL í .env
 npm run setup
 npm run dev
-```
-
-Uppsetning á heroku, gefið að appið sé til undir nafninu <APP> og þú sért loggedin á heroku cli:
-
-```bash
-heroku git:remote -a <APP>
-heroku addons:create heroku-postgresql:hobby-dev
-git push heroku main
-heroku run npm run setup
 ```
 
 ## Skipanir
@@ -175,7 +166,7 @@ TOKEN_LIFETIME
 
 https://vef2h1-rfc.herokuapp.com
 
-> Útgáfa 0.5
+> Útgáfa 1.0
 
 | Útgáfa | Breyting        |
 | ------ | --------------- |
@@ -185,4 +176,6 @@ https://vef2h1-rfc.herokuapp.com
 | 0.4    | Users           |
 | 0.5    | Events          |
 | 0.6    | cURL            |
-| 1.0    | tests           |
+| 0.7    | tests           |
+| 0.8    | lint            |
+| 1.0    | finalize        |

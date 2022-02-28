@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 /* eslint-disable no-useless-escape */
 /* eslint-disable quotes */
-import express, { json } from 'express';
+import express from 'express';
 import xss from 'xss';
 import { catchErrors } from '../utils/catch-errors.js';
 import { createRegistration,

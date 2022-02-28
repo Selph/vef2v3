@@ -1,5 +1,5 @@
-import { body, param, validationResult } from 'express-validator';
-import { comparePasswords, findByUsername, getEventById, listEvents, listSignupsById } from '../db.js';
+import { body, param } from 'express-validator';
+import { comparePasswords, findByUsername } from '../db.js';
 import { LoginError } from '../errors.js';
 import { resourceExists } from './helper.js';
 

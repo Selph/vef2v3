@@ -1,10 +1,13 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { jwtOptions, requireAdmin, requireAuthentication, tokenLifetime } from '../auth/passport.js';
-import { comparePasswords, findById, findByUsername, query } from '../db.js';
+import { jwtOptions,
+         requireAdmin,
+         requireAuthentication,
+         tokenLifetime } from '../auth/passport.js';
+import { comparePasswords, findByUsername, query } from '../db.js';
 import { sanitation } from '../validation/sanitation.js';
-import { nameValidator, passwordValidator, usernameValidator, validationUser } from '../validation/validators.js';
+import { validationUser } from '../validation/validators.js';
 import { validationCheck } from '../validation/helper.js';
 import { catchErrors } from '../utils/catch-errors.js';
 

@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 import fs from 'fs';
 import crypto from 'crypto';
 import { join, dirname } from 'path';
@@ -125,7 +126,7 @@ export async function createRandomEventAndReturnSlug() {
   const token = await loginAndReturnToken({ username, password });
 
   const data = { name, description };
-  const { result } = await postAndParse('/events', data, token);
+  await postAndParse('/events', data, token);
 
   const slug = createSlug(name);
   return slug;
