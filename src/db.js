@@ -237,11 +237,11 @@ export async function listSignupsById(id){
   return result;
 }
 
-export async function getEvent(slug) {
+async function getID(slug) {
   let result = [];
   try {
     const queryResult = await query(
-      'SELECT * FROM events WHERE slug = $1', [slug]
+      'SELECT id FROM events WHERE slug = $1', [slug]
     );
 
     if (queryResult && queryResult.rows) {
@@ -250,7 +250,33 @@ export async function getEvent(slug) {
   } catch (e) {
     console.error('Error selecting rows', e)
   }
-  return result;
+  return result[0].id;
+}
+
+export async function getEvent(slug) {
+  const id = await getID(slug);
+  let result = [];
+  let signups = [];
+  try {
+    const queryResult = await query(
+      'SELECT * FROM events WHERE slug = $1', [slug]
+    );
+
+    if (queryResult && queryResult.rows) {
+      result = queryResult.rows;
+    }
+
+    const querySignups= await query(
+      'SELECT username, comment FROM signups WHERE id = $1', [id]
+    );
+
+    if (querySignups && querySignups.rows) {
+      signups = querySignups.rows;
+    }
+  } catch (e) {
+    console.error('Error selecting rows', e)
+  }
+  return { result, signups };
 }
 
 export async function getEventById(id) {

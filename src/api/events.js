@@ -55,11 +55,10 @@ async function insertEvent(req, res) {
 }
 
 async function listEvent(req, res) {
+  const { result, signups } = await getEvent(req.params.id)
 
-  const event = await getEvent(req.params.id)
-
-  if (event.length === 0) return res.status(404).json({error: 'no event found'})
-  return res.json(event)
+  if (result.length === 0) return res.status(404).json({error: 'no event found'})
+  return res.json({ result, signups })
 }
 
 function isString(s) {
