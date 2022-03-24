@@ -255,7 +255,7 @@ async function getID(slug) {
 
 export async function getEvent(slug) {
   const id = await getID(slug);
-  let result = [];
+  let event = [];
   let signups = [];
   try {
     const queryResult = await query(
@@ -263,7 +263,7 @@ export async function getEvent(slug) {
     );
 
     if (queryResult && queryResult.rows) {
-      result = queryResult.rows;
+      event = queryResult.rows;
     }
 
     const querySignups= await query(
@@ -276,7 +276,7 @@ export async function getEvent(slug) {
   } catch (e) {
     console.error('Error selecting rows', e)
   }
-  return { result, signups };
+  return { event, signups };
 }
 
 export async function getEventById(id) {
