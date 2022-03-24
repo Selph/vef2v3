@@ -18,6 +18,7 @@ const {
 const app = express();
 
 app.use(express.json());
+app.use(cors);
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 
@@ -44,8 +45,6 @@ app.get('/', async (req, res) => {
 
 app.use('/events', eventRouter);
 app.use('/users', userRouter);
-
-app.use(cors);
 
 app.locals = {
   // TODO hjálparföll fyrir template
